@@ -1,10 +1,10 @@
 # introduzione studente
-# design menu
+# design logic- request list- list below is the copy of request list reverse to get value in same index
 
-value = 0
 requests = []
+# list = [321]
 # set limit of list to 8 int
-cache = [] * 8
+cache = []
 main_program = True
 
 
@@ -12,6 +12,12 @@ main_program = True
 def program():
     print('Hello human')
     get_value()
+
+
+def option():
+    global requests
+    global main_program
+
     option = input('Please select 1 for FIFO, 2 for LFU or q for exit: ')
     if(option == '1'):
         print(fifo())  # chiamando funzione ancora non definita
@@ -19,22 +25,45 @@ def program():
         print(ulf())  # chiamando funzione ancora non definita
     elif(option == 'q'):
         print('See ya')
+        main_program = False
+
+
+def get_value():
+    global requests
+    while True:
+        try:
+            value = int(input('please enter a value or 0 to go back to cache selection: '))
+            requests.append(value)
+            option()
+            if (value < 0):
+                raise ValueError
+            elif (value == 0):
+                option()
+            break
+        except ValueError:
+            print('my processors cannot understand the input')
+    return value
 
 
 # creando prima funzione
 def fifo():
-    global requests  # iterating over requests
-    global cache  # iterating over cache
-    global value
-    i = value
+    global requests  # accessing request
+    global cache
+    reqlist = []
+    reqlist = requests[:: -1]
 
-    requests = set(requests)
-    if i in requests:
+    # will print inverted list
+    if(reqlist[0] in cache):
         print('hit')
+        print('page ' + str(reqlist[0]) + ' already inside cache')
     else:
+        cache.append(reqlist[0])
         print('miss')
-        cache.append(i)
-    return requests
+        if(len(cache) <= 8):
+            print('page ' + str(reqlist[0]) + ' added to the cache')
+        else:
+            cache.pop(0)
+            print('page ' + str(reqlist[0]) + ' added and ' + str(cache[0]) + ' removed')
 
 
 # creando la seconda funzione
@@ -43,11 +72,5 @@ def ulf():
     return requests
 
 
-def get_value():
-    global value
-    value = int(input('please enter a value: '))
-    requests.append(value)
-    return value
-
-
-program()
+while main_program:
+    program()
